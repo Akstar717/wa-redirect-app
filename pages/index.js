@@ -10,11 +10,12 @@ export default function Home() {
         <ul style={styles.list}>
           <li>✅ Never get banned again</li>
           <li>✅ Members auto-redirected to your Telegram</li>
-          <li>✅ $7/month — cancel anytime</li>
+          <li>✅ ₦5,000/month — cancel anytime</li>
+          <li>✅ 3-day free trial</li>
         </ul>
 
-        <a href="/dashboard" style={styles.button}>
-          Get Started
+        <a href="/login" style={styles.button}>
+          Start Free Trial
         </a>
       </div>
     </div>
