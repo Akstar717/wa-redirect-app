@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
+import { usePaystackPayment } from 'react-paystack';
 
 const TRIAL_DAYS = 3;
+const PRICE_KOBO = 500000; // ₦5,000 in kobo (Paystack uses kobo)
 
 export default function Dashboard() {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [telegramLink, setTelegramLink] = useState('');
   const [message, setMessage] = useState('');
   const [trialStatus, setTrialStatus] = useState(null);
+  const [paid, setPaid] = useState(false);
 
-  // Check trial status when the page loads
   useEffect(() => {
     const savedNumber = localStorage.getItem('whatsapp_number') || '';
     const savedLink = localStorage.getItem('telegram_link') || '';
+    const savedPaid = localStorage.getItem('paid') === 'true';
     setWhatsappNumber(savedNumber);
     setTelegramLink(savedLink);
+    setPaid(savedPaid);
 
     let startDate = localStorage.getItem('trial_start');
     if (!startDate) {
-      // First time visiting — start the trial now
       startDate = new Date().toISOString();
       localStorage.setItem('trial_start', startDate);
     }
@@ -44,29 +47,91 @@ export default function Dashboard() {
     setMessage('✅ Saved! Your auto-redirect is now active.');
   };
 
-  // Loading state
+  // Paystack configuration
+  const paystackConfig = {
+    reference: `WA-${Date.now()}`,
+    email: 'user@example.com', // We'll replace with real user email later
+    amount: PRICE_KOBO,
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+    currency: 'NGN',
+  };
+
+  const onSuccess = (reference) => {
+    localStorage.setItem('paid', 'true');
+    setPaid(true);
+    alert('✅ Payment received! Welcome to WA Redirect Pro.');
+  };
+
+  const onClose = () => {
+    console.log('Payment window closed');
+  };
+
+  const initializePayment = usePaystackPayment(paystackConfig);
+
   if (!trialStatus) {
     return <div style={styles.page}><p>Loading...</p></div>;
   }
 
-  // Trial expired — show paywall
+  // PAID USER — show dashboard
+  if (paid) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.card}>
+          <div style={styles.banner}>
+            ✅ Subscribed — <b>Active</b>
+          </div>
+          <h1 style={styles.title}>Your Dashboard</h1>
+          <p style={styles.subtitle}>Set up your auto-redirect below.</p>
+
+          <label style={styles.label}>WhatsApp Business Number</label>
+          <input
+            type="text"
+            placeholder="+2348012345678"
+            value={whatsappNumber}
+            onChange={(e) => setWhatsappNumber(e.target.value)}
+            style={styles.input}
+          />
+
+          <label style={styles.label}>Your Telegram Link</label>
+          <input
+            type="url"
+            placeholder="https://t.me/yourchannel"
+            value={telegramLink}
+            onChange={(e) => setTelegramLink(e.target.value)}
+            style={styles.input}
+          />
+
+          <button onClick={saveSettings} style={styles.button}>
+            Save & Activate
+          </button>
+
+          {message && <p style={styles.message}>{message}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // TRIAL EXPIRED — show paywall
   if (!trialStatus.active) {
     return (
       <div style={styles.page}>
         <div style={styles.card}>
           <h1 style={styles.title}>⏰ Your Free Trial Has Ended</h1>
           <p style={styles.subtitle}>
-            Your 3-day free trial is over. Subscribe for just <b>$7/month</b> to keep using WA Redirect.
+            Subscribe for just <b>₦5,000/month</b> to keep using WA Redirect.
           </p>
-          <button style={styles.button} onClick={() => alert('Paystack coming on Day 5!')}>
-            Pay $7/month
+          <button
+            style={styles.button}
+            onClick={() => initializePayment({ onSuccess, onClose })}
+          >
+            Pay ₦5,000/month
           </button>
         </div>
       </div>
     );
   }
 
-  // Trial active — show dashboard
+  // TRIAL ACTIVE — show dashboard with banner
   return (
     <div style={styles.page}>
       <div style={styles.card}>
