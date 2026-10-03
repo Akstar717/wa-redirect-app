@@ -17,13 +17,17 @@ export default function Login() {
       if (error) {
         setMessage(`❌ ${error.message}`);
       } else {
-        setMessage('✅ Account created! Check your email to confirm, or try logging in.');
+        setMessage('✅ Account created! You can now log in.');
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setMessage(`❌ ${error.message}`);
+      } else if (!data.session) {
+        setMessage('❌ Login succeeded but no session. Check your email is confirmed.');
       } else {
+        // Wait a moment for the session to persist
+        await new Promise((r) => setTimeout(r, 500));
         router.push('/dashboard');
       }
     }
