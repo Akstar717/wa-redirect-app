@@ -118,9 +118,9 @@ export default function Dashboard() {
           </p>
 
           <div style={styles.bankBox}>
-            <p style={styles.bankLine}><b>Bank:</b> [YOUR BANK NAME]</p>
-            <p style={styles.bankLine}><b>Account Name:</b> [ACCOUNT NAME]</p>
-            <p style={styles.bankLine}><b>Account Number:</b> [ACCOUNT NUMBER]</p>
+            <p style={styles.bankLine}><b>Bank:</b> [OPAY]</p>
+            <p style={styles.bankLine}><b>Account Name:</b> [EKELEDIRIJEHOVAH PAUL IGWE]</p>
+            <p style={styles.bankLine}><b>Account Number:</b> [8055565653]</p>
             <p style={styles.bankLine}><b>Amount:</b> ₦5,000</p>
           </div>
 
@@ -129,7 +129,7 @@ export default function Dashboard() {
           </p>
 
           <a
-            href="https://wa.me/2348012345678?text=Hi%2C%20I%20just%20paid%20%E2%82%A65%2C000%20for%20WA%20Redirect.%20Here%20is%20my%20receipt."
+            href="https://wa.me/2348108824248?text=Hi%2C%20I%20just%20paid%20%E2%82%A65%2C000%20for%20WA%20Redirect.%20Here%20is%20my%20receipt."
             style={styles.button}
             target="_blank"
             rel="noopener noreferrer"
